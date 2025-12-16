@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Resize your passport photo</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 2rem;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      margin: 0;
+      color: #333;
+    }
+    .container {
+      max-width: 700px;
+      margin: 0 auto;
+      background: white;
+      padding: 2.5rem;
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+    h1 {
+      margin: 0 0 0.5rem 0;
+      color: #4a5568;
+      font-size: 2rem;
+    }
+    .subtitle {
+      color: #718096;
+      margin-bottom: 1.5rem;
+      font-size: 0.95rem;
+    }
+    .upload-area {
+      display: block;
+      border: 2px dashed #cbd5e0;
+      border-radius: 12px;
+      padding: 2rem;
+      text-align: center;
+      background: #f7fafc;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      width: 100%;
+    }
+    .upload-area:hover {
+      border-color: #667eea;
+      background: #eef2ff;
+    }
+    .upload-area.has-image {
+      border-style: solid;
+      border-color: #48bb78;
+      background: #f0fff4;
+    }
+    .upload-icon {
+      font-size: 3rem;
+      margin-bottom: 0.5rem;
+    }
+    .upload-text {
+      color: #718096;
+      font-size: 0.9rem;
+    }
+    input[type="file"] {
+      display: none;
+    }
+    canvas {
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      max-width: 100%;
+      height: auto;
+    }
+    button {
+      display: inline-block;
+      margin-top: 1.5rem;
+      padding: 0.875rem 2rem;
+      font-size: 1rem;
+      font-weight: 600;
+      color: white;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+    button:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+    }
+    button:disabled {
+      background: #cbd5e0;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+    .note {
+      background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+      border: none;
+      border-left: 4px solid #f59e0b;
+      border-radius: 8px;
+      padding: 1.25rem 1.5rem;
+      margin-top: 2rem;
+    }
+    .note h3 {
+      margin: 0 0 0.75rem 0;
+      color: #92400e;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .note p {
+      margin: 0.5rem 0;
+      color: #78350f;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+    .note ul {
+      margin: 0.75rem 0;
+      padding-left: 1.25rem;
+      color: #78350f;
+      font-size: 0.9rem;
+      line-height: 1.7;
+    }
+    .note li {
+      margin: 0.25rem 0;
+    }
+    .note strong {
+      color: #92400e;
+    }
+    .specs {
+      display: flex;
+      gap: 0.75rem;
+      margin: 1rem 0 1.5rem 0;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .canvas-container {
+      display: none;
+      margin-top: 1.5rem;
+      text-align: center;
+    }
+    .canvas-container.visible {
+      display: block;
+    }
+    .spec-badge {
+      background: #e0e7ff;
+      color: #4338ca;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+    .privacy-notice {
+      background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+      border: none;
+      border-left: 4px solid #10b981;
+      border-radius: 8px;
+      padding: 0.875rem 1rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.875rem;
+      color: #065f46;
+    }
+    .privacy-icon {
+      font-size: 1.25rem;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Resize your passport photo</h1>
+  <p class="subtitle">Resize and crop your photo for residency applications ✨</p>
+
+  <div class="privacy-notice">
+    <span class="privacy-icon">🔒</span>
+    <span>Your privacy is protected. This tool processes images entirely in your browser. No data is uploaded, stored, or sent to any server or third party.</span>
+  </div>
+
+  <div class="specs">
+    <span class="spec-badge">420 x 535 px</span>
+    <span class="spec-badge">300 DPI</span>
+    <span class="spec-badge">JPEG Output</span>
+  </div>
+
+  <label class="upload-area" id="uploadArea">
+    <div class="upload-icon">📷</div>
+    <div class="upload-text">Click to upload or drag and drop JPEG or PNG format photo</div>
+    <input type="file" id="fileInput" accept="image/jpeg,image/png">
+  </label>
+
+  <div class="canvas-container" id="canvasContainer">
+    <canvas id="canvas" width="420" height="535"></canvas>
+    <br>
+    <button id="downloadBtn" disabled>Download JPEG (300 DPI)</button>
+  </div>
+
+  <div class="note">
+    <h3>⚠️ Residency Application Photo Requirements</h3>
+    <p>For residency application submissions, the passport photo <strong>MUST</strong> meet the following specifications:</p>
+    <ul>
+      <li><strong>Minimum size:</strong> 413 x 531 pixels (35mm x 45mm)</li>
+      <li><strong>Maximum size:</strong> 448 x 590 pixels (38mm x 50mm)</li>
+      <li><strong>Resolution:</strong> 240 to 300 DPI</li>
+      <li><strong>Format:</strong> JPEG only</li>
+    </ul>
+    <p>Photos should <strong>not</strong> be scanned. Visit an official photo shop with these specifications and obtain a digital photo in JPEG format.</p>
+    <p><strong>Failure to provide the correct photo size, format, and resolution will result in the inability to submit your employment permit application.</strong></p>
+  </div>
+</div>
+
+<script>
+const TARGET_W = 420;
+const TARGET_H = 535;
+const DPI = 300;
+
+const fileInput = document.getElementById("fileInput");
+const downloadBtn = document.getElementById("downloadBtn");
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
+const uploadArea = document.getElementById("uploadArea");
+
+fileInput.addEventListener("change", () => {
+  const file = fileInput.files[0];
+  if (!file) return;
+  loadImage(file);
+});
+
+// Drag and drop support
+uploadArea.addEventListener("dragover", (e) => {
+  e.preventDefault();
+  uploadArea.style.borderColor = "#667eea";
+  uploadArea.style.background = "#eef2ff";
+});
+
+uploadArea.addEventListener("dragleave", () => {
+  uploadArea.style.borderColor = "#cbd5e0";
+  uploadArea.style.background = "#f7fafc";
+});
+
+uploadArea.addEventListener("drop", (e) => {
+  e.preventDefault();
+  uploadArea.style.borderColor = "#cbd5e0";
+  uploadArea.style.background = "#f7fafc";
+  const file = e.dataTransfer.files[0];
+  if (file && (file.type === "image/jpeg" || file.type === "image/png")) {
+    loadImage(file);
+  }
+});
+
+const canvasContainer = document.getElementById("canvasContainer");
+
+function loadImage(file) {
+  const img = new Image();
+  img.onload = () => {
+    drawCenteredCrop(img);
+    uploadArea.classList.add("has-image");
+    uploadArea.querySelector(".upload-text").innerHTML = "✓ Image loaded! Click to change";
+    canvasContainer.classList.add("visible");
+  };
+  img.src = URL.createObjectURL(file);
+}
+
+function drawCenteredCrop(img) {
+  const srcAspect = img.width / img.height;
+  const tgtAspect = TARGET_W / TARGET_H;
+
+  let sx, sy, sw, sh;
+  if (srcAspect > tgtAspect) {
+    sh = img.height;
+    sw = sh * tgtAspect;
+    sx = (img.width - sw) / 2;
+    sy = 0;
+  } else {
+    sw = img.width;
+    sh = sw / tgtAspect;
+    sx = 0;
+    sy = (img.height - sh) / 2;
+  }
+
+  ctx.clearRect(0, 0, TARGET_W, TARGET_H);
+  ctx.drawImage(img, sx, sy, sw, sh, 0, 0, TARGET_W, TARGET_H);
+  downloadBtn.disabled = false;
+}
+
+downloadBtn.addEventListener("click", async () => {
+  const blob = await canvasToJPEGWithDPI(canvas, DPI);
+
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "passport_420x535_300dpi.jpg";
+  a.click();
+  URL.revokeObjectURL(a.href);
+});
+
+/* ---------- JPEG (JFIF header) ---------- */
+async function canvasToJPEGWithDPI(canvas, dpi) {
+  const blob = await new Promise(r => canvas.toBlob(r, "image/jpeg", 0.95));
+  const jpeg = new Uint8Array(await blob.arrayBuffer());
+
+  // JFIF APP0 segment with DPI
+  const app0 = new Uint8Array([
+    0xFF,0xE0,0x00,0x10,
+    0x4A,0x46,0x49,0x46,0x00,
+    0x01,0x01,0x01,
+    dpi >> 8, dpi & 255,
+    dpi >> 8, dpi & 255,
+    0x00,0x00
+  ]);
+
+  const out = new Uint8Array(jpeg.length + app0.length - 2);
+  out.set(jpeg.slice(0, 2), 0);
+  out.set(app0, 2);
+  out.set(jpeg.slice(2), app0.length);
+
+  return new Blob([out], { type: "image/jpeg" });
+}
+</script>
+
+</body>
+</html>
