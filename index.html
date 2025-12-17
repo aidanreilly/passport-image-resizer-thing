@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Resize your passport photo</title>
   <style>
     * {
@@ -9,24 +10,42 @@
     }
     body {
       font-family: system-ui, -apple-system, sans-serif;
-      padding: 2rem;
+      padding: 1rem;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       min-height: 100vh;
       margin: 0;
       color: #333;
     }
     .container {
-      max-width: 700px;
+      max-width: 900px;
+      width: 100%;
       margin: 0 auto;
       background: white;
-      padding: 2.5rem;
+      padding: 1.5rem;
       border-radius: 16px;
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+    @media (min-width: 768px) {
+      body {
+        padding: 2rem;
+      }
+      .container {
+        padding: 2.5rem;
+      }
+    }
+    @media (max-width: 480px) {
+      body {
+        padding: 0.5rem;
+      }
+      .container {
+        padding: 1rem;
+        border-radius: 12px;
+      }
     }
     h1 {
       margin: 0 0 0.5rem 0;
       color: #4a5568;
-      font-size: 2rem;
+      font-size: clamp(1.5rem, 5vw, 2rem);
     }
     .subtitle {
       color: #718096;
@@ -176,7 +195,6 @@
   <p class="subtitle">Resize and crop your photo for residency applications ✨</p>
 
   <div class="privacy-notice">
-    <span class="privacy-icon">🔒</span>
     <span>Your privacy is protected. This tool processes images entirely in your browser. No data is uploaded, stored, or sent to any server or third party.</span>
   </div>
 
@@ -199,7 +217,7 @@
   </div>
 
   <div class="note">
-    <h3>⚠️ Residency Application Photo Requirements</h3>
+    <h3>Residency application photo requirements</h3>
     <p>For residency application submissions, the passport photo <strong>MUST</strong> meet the following specifications:</p>
     <ul>
       <li><strong>Minimum size:</strong> 413 x 531 pixels (35mm x 45mm)</li>
